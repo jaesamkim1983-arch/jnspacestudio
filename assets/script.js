@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   injectFloatingCta();
   initContactForm();
   initChatWidget();
+  initScheduleCalendar();
 });
 
 /* ---------- 모바일 메뉴 토글 ---------- */
@@ -105,6 +106,92 @@ function initContactForm() {
         submitBtn.textContent = originalText;
       });
   });
+}
+
+/* ---------- 스케쥴 페이지: 월별 예약 현황 캘린더 ---------- */
+function initScheduleCalendar() {
+  var grid = document.getElementById('cal-grid');
+  if (!grid) return;
+
+  var titleEl = document.getElementById('cal-title');
+  var statusEl = document.getElementById('cal-status');
+  var prevBtn = document.getElementById('cal-prev');
+  var nextBtn = document.getElementById('cal-next');
+
+  var today = new Date();
+  var view = { year: today.getFullYear(), month: today.getMonth() + 1 }; // month: 1-12
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function render() {
+    titleEl.textContent = view.year + '년 ' + view.month + '월';
+    statusEl.textContent = '불러오는 중...';
+    statusEl.className = 'cal-status';
+
+    // clear previously injected day cells (keep the 7 weekday headers)
+    grid.querySelectorAll('.cal-day').forEach(function (el) { el.remove(); });
+
+    var firstOfMonth = new Date(view.year, view.month - 1, 1);
+    var daysInMonth = new Date(view.year, view.month, 0).getDate();
+    var startWeekday = firstOfMonth.getDay(); // 0=일
+    var totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    var cells = {};
+    for (var i = 0; i < totalCells; i++) {
+      var dayNum = i - startWeekday + 1;
+      var cell = document.createElement('div');
+      cell.className = 'cal-day';
+      if (dayNum < 1 || dayNum > daysInMonth) {
+        cell.classList.add('is-other-month');
+      } else {
+        var dateStr = view.year + '-' + pad(view.month) + '-' + pad(dayNum);
+        var numEl = document.createElement('div');
+        numEl.className = 'cal-day-num';
+        numEl.textContent = dayNum;
+        cell.appendChild(numEl);
+        var isToday = dateStr === (today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate()));
+        if (isToday) cell.classList.add('is-today');
+        cells[dateStr] = cell;
+      }
+      grid.appendChild(cell);
+    }
+
+    fetch('/api/schedule?year=' + view.year + '&month=' + view.month)
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) {
+          statusEl.textContent = result.data.error || '예약 현황을 불러오지 못했습니다.';
+          statusEl.className = 'cal-status is-error';
+          return;
+        }
+        statusEl.textContent = '';
+        (result.data.bookings || []).forEach(function (b) {
+          var cell = cells[b.date];
+          if (!cell) return;
+          var pill = document.createElement('div');
+          pill.className = 'cal-booking';
+          pill.textContent = b.end ? (b.start + '~' + b.end + ' 예약됨') : (b.start + ' 예약됨');
+          cell.appendChild(pill);
+        });
+      })
+      .catch(function () {
+        statusEl.textContent = '예약 현황을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+        statusEl.className = 'cal-status is-error';
+      });
+  }
+
+  prevBtn.addEventListener('click', function () {
+    view.month -= 1;
+    if (view.month < 1) { view.month = 12; view.year -= 1; }
+    render();
+  });
+  nextBtn.addEventListener('click', function () {
+    view.month += 1;
+    if (view.month > 12) { view.month = 1; view.year += 1; }
+    render();
+  });
+
+  render();
 }
 
 /* ---------- 카카오톡 상담 연결 버튼 ---------- */
