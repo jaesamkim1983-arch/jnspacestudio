@@ -5,11 +5,13 @@
 :root {
   --color-bg: #ffffff;
   --color-surface: #faf8f5;
-  --color-text: #1a1a1a;
+  --color-text: #363636;
   --color-muted: #7a756d;
   --color-line: #e8e4dd;
-  --color-accent: #1a1a1a;
+  --color-accent: #363636;
   --color-accent-dark: #000000;
+  --color-warm: #d67c1a;
+  --color-intro-bg: #f0eae1;
   --color-dark: #17181a;
   --color-dark-muted: #b9b6b0;
   --header-h: 118px;
@@ -126,14 +128,14 @@ p { margin: 0; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Playfair Display', 'Pretendard Variable', serif;
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--color-text);
+  font-family: 'Times New Roman', 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: normal;
+  color: #212121;
 }
 .logo span {
-  font-weight: 600;
+  font-weight: 700;
 }
 .logo-mark {
   width: 34px;
@@ -145,23 +147,21 @@ p { margin: 0; }
 .nav-desktop {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
 }
 .nav-desktop a {
   font-family: 'Pretendard Variable', Pretendard, sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.01em;
-  color: var(--color-text);
-  padding: 9px 20px;
-  border-radius: 999px;
+  color: #212121;
+  padding: 0 18px;
 }
 .nav-desktop a:hover {
-  background: var(--color-surface);
+  font-weight: 700;
 }
 .nav-desktop a.active {
-  background: var(--color-text);
-  color: #fff;
+  font-weight: 700;
 }
 .nav-cta {
   display: flex;
@@ -254,46 +254,74 @@ p { margin: 0; }
   display: block;
 }
 
-/* ---------- Intro (히어로 아래 소개 문구) ---------- */
-.intro {
-  padding: 80px 0 56px;
-  text-align: center;
+/* ---------- Intro split (좌: 텍스트 / 우: 사진, 50:50) ---------- */
+.intro-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
-.intro h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(28px, 4vw, 40px);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-.intro p {
-  margin-top: 28px;
-  font-size: 16px;
-  line-height: 2;
-  color: var(--color-muted);
-  max-width: 620px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.intro-actions {
-  margin-top: 36px;
+.intro-split-text {
+  background: var(--color-intro-bg);
   display: flex;
-  gap: 12px;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  text-align: center;
+  padding: 64px 48px;
+}
+.intro-split-text-inner { max-width: 420px; }
+.intro-split-text h1 {
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+.intro-split-text h1 .accent {
+  font-size: 36px;
+  color: var(--color-warm);
+}
+.intro-split-text h1 .rest {
+  font-size: 18px;
+  color: var(--color-text);
+}
+.intro-split-text p {
+  font-size: 15px;
+  line-height: 24px;
+  color: #363636;
+}
+.intro-split-text p + p { margin-top: 8px; }
+.intro-split-text .intro-gap { height: 20px; }
+.intro-split-actions { margin-top: 32px; }
+.intro-split-img {
+  overflow: hidden;
+}
+.intro-split-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* ---------- Full-bleed masonry gallery ---------- */
-.masonry {
-  column-count: 2;
-  column-gap: 0;
+/* ---------- Uniform 3-column gallery grid ---------- */
+.grid3-uniform {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 5px;
+  padding: 5px;
 }
-.masonry img {
-  width: 100%;
+.grid3-uniform a,
+.grid3-uniform div {
+  aspect-ratio: 462 / 351;
+  overflow: hidden;
   display: block;
-  break-inside: avoid;
 }
-@media (min-width: 720px) {
-  .masonry { column-count: 3; }
+.grid3-uniform img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (min-width: 640px) {
+  .grid3-uniform { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .intro-split { grid-template-columns: 1fr; }
+  .intro-split-img { order: -1; aspect-ratio: 16/9; }
 }
 
 /* ---------- Editorial feed (이미지-텍스트 교차 배치) ---------- */
@@ -327,9 +355,9 @@ p { margin: 0; }
 }
 .page-hero .eyebrow { display: none; }
 .page-hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  font-size: clamp(28px, 4vw, 40px);
+  font-family: 'Times New Roman', 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 36px);
 }
 .page-hero p { margin-top: 16px; color: var(--color-muted); font-size: 16px; max-width: 620px; margin-left: auto; margin-right: auto; }
 
@@ -510,13 +538,29 @@ textarea.form-control { resize: vertical; min-height: 140px; }
 
 /* ---------- Shortcut pill band ---------- */
 .btn-dark {
-  background: var(--color-text);
+  background: #363636;
   color: #fff;
-  padding: 16px 32px;
+  border: 1px solid #363636;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 400;
 }
 .btn-dark:hover { background: #000; }
-.shortcut-band { padding: 64px 0 8px; text-align: center; }
-.shortcut-pills { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.shortcut-band { padding: 40px 0 8px; text-align: center; }
+.shortcut-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Hero CTA (barely-rounded, matches original) ---------- */
+.btn-hero {
+  background: #363636;
+  color: #fff;
+  border: 1px solid #363636;
+  border-radius: 2px;
+  padding: 15px 30px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.btn-hero:hover { background: #000; }
 
 /* ---------- Footer ---------- */
 .site-footer {
@@ -541,10 +585,11 @@ textarea.form-control { resize: vertical; min-height: 140px; }
 }
 .footer-nav a:hover { text-decoration: underline; }
 .footer-brand {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Times New Roman', 'Playfair Display', serif;
   font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  letter-spacing: normal;
+  color: #212121;
   margin-bottom: 24px;
 }
 .footer-info { color: var(--color-muted); font-size: 14px; line-height: 2; margin-bottom: 24px; }
