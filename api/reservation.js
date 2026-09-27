@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '이름, 연락처, 이메일, 촬영날짜는 필수입니다.' });
   }
 
-  const { error } = await supabase
+  const { error: dbError } = await supabase
     .from('reservations')
     .insert([{
       name,
@@ -45,12 +45,12 @@ export default async function handler(req, res) {
       message: message || null,
     }]);
 
-  if (error) {
-    console.error('Supabase insert error (reservations):', error);
-    return res.status(500).json({ error: '예약 신청 저장에 실패했습니다.' });
+  if (dbError) {
+    console.error('Supabase insert error (reservations):', dbError);
   }
 
   const lines = [
+    dbError ? '⚠️ DB 저장 실패 (아래 내용은 알림으로만 전달됨, 직접 기록해두세요)' : null,
     '📸 새로운 스튜디오 예약 신청이 도착했습니다',
     `이름: ${name}`,
     `연락처: ${phone}`,
