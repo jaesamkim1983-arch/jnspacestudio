@@ -56,6 +56,7 @@ function initContactForm() {
   if (!form) return;
 
   var status = document.getElementById('form-status');
+  var loadedAt = Date.now();
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -79,6 +80,7 @@ function initContactForm() {
       }
     });
     if (Array.isArray(payload.purpose)) payload.purpose = payload.purpose.join(', ');
+    payload.form_age_ms = Date.now() - loadedAt;
     if (Array.isArray(payload.rental_items)) payload.rental_items = payload.rental_items.join(', ');
 
     fetch('/api/reservation', {

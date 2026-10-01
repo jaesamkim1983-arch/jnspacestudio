@@ -24,7 +24,15 @@ export default async function handler(req, res) {
     rental_items,
     referral_source,
     message,
+    website,
+    form_age_ms,
   } = req.body || {};
+
+  // 스팸 봇 차단: 숨김 필드(honeypot)가 채워져 있거나, 폼이 열리자마자(2초 이내) 제출된 경우
+  // 사람이 작성할 수 없는 속도이므로 저장/알림 없이 조용히 성공 응답만 반환한다.
+  if (website || (typeof form_age_ms === 'number' && form_age_ms < 2000)) {
+    return res.status(200).json({ success: true });
+  }
 
   if (!name || !phone || !email || !date_start || !date_end) {
     return res.status(400).json({ error: '이름, 연락처, 이메일, 촬영날짜는 필수입니다.' });
